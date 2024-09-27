@@ -5,6 +5,18 @@ Algorithm 1 Psuedocode
 
 
 
+def in_place_selection_sort(U):
+<unsorted zone> = u
+<sorted zone> = empty
+<swap_counter> = 0
+while <unsorted zone> is not empty:
+least_index = <index of smallest element in unsorted zone>
+<swap u[least_index] to the end of the unsorted zone>
+<remove the least element from the unsorted zone>
+<add the least element to the sorted zone>
+<swap_counter> = swap_counter + 1
+return <swap_counter>
+
 
 
 
