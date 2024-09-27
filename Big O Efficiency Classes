@@ -4,9 +4,9 @@ Big O Efficiency Classes for Algorithm 1-3
 
 Algorithm 1 
 
-Best case Big O Efficiency == O(n)
+Best case Big O Efficiency == O(1)
 Worst case Big O Efficiency == O(nlogn)
-Average case Big O Efficiency == O(logn)
+Average case Big O Efficiency == O(n)
 
 
 
