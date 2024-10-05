@@ -12,7 +12,9 @@ Average case Big O Efficiency == O(n)
 
 Algorithm 2
 
-
+Best case Big O Efficiency == O(n)
+Worst case Big O Efficiency == O(n^2)
+Average case Big O Efficiency == O(n^2)
 
 
 Algorithm 1
