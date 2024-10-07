@@ -1,0 +1,52 @@
+function travel(distances, fuel, mpg) {
+  let currentFuel = 0;
+  let totalDistancesTravelled = 0;
+  // Loop over the distances array (to pick the first distance travelled)
+  for (let i = 0; i < distances.length; i++) {
+    console.log(
+      `Current starting at city ${i} (refueling ${fuel[i]} gallon(s) prior to distance of ${distances[i]} miles)`
+    );
+    currentFuel = 0;
+    totalDistancesTravelled = 0;
+    indexDistanceToTravel = i;
+    while (totalDistancesTravelled < distances.length) {
+      // start by refueling (car can travel 10 miles per gallon)
+      currentFuel += fuel[indexDistanceToTravel % distances.length] * mpg;
+      // followed by traveling distance
+      currentFuel -= distances[indexDistanceToTravel % distances.length];
+      console.log(
+        `     travelling to city ${
+          (indexDistanceToTravel + 1) % distances.length
+        }, gas is now ${currentFuel}`
+      );
+      // if negative after completing the distance, the trip is impossible, so quit while loop and try to start from another city
+      if (currentFuel < 0) {
+        console.log(
+          `Fuel is negative, ${currentFuel}, cannot start from city ${i}`
+        );
+        break;
+      }
+
+      totalDistancesTravelled++;
+      indexDistanceToTravel++;
+
+      // if preferred city found
+      if (totalDistancesTravelled >= distances.length) {
+        console.log(
+          `The preferred starting city from the sample above is city ${i}`
+        );
+        return;
+      }
+    }
+  }
+}
+
+city_distances = [5, 25, 15, 10, 15];
+fuel = [1, 2, 1, 0, 3];
+mpg = 10;
+travel(city_distances, fuel, mpg);
+
+city_distances = [10, 20, 10, 20, 10];
+fuel = [1, 2, 3, 4, 4];
+mpg = 5;
+travel(city_distances, fuel, mpg);
