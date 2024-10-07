@@ -1,0 +1,60 @@
+function schedule(
+  person1_Schedule,
+  person1_DailyAct,
+  person2_Schedule,
+  person2_DailyAct,
+  duration_of_meeting
+) {
+  const convertTimesPattern = /^(\d+):(\d+)$/u;
+
+  let person1_newArray = [];
+  let person2_newArray = [];
+
+  for (const [startTime, endTime] of person1_Schedule) {
+    var matchStartTime = convertTimesPattern.exec(startTime);
+    var matchEndTime = convertTimesPattern.exec(endTime);
+    person1_newArray.push([
+      parseInt(matchStartTime[1]) * 60 + parseInt(matchStartTime[2]),
+      parseInt(matchEndTime[1]) * 60 + parseInt(matchEndTime[2]),
+    ]);
+  }
+
+  for (const [startTime, endTime] of person2_Schedule) {
+    var matchStartTime = convertTimesPattern.exec(startTime);
+    var matchEndTime = convertTimesPattern.exec(endTime);
+    person2_newArray.push([
+      parseInt(matchStartTime[1]) * 60 + parseInt(matchStartTime[2]),
+      parseInt(matchEndTime[1]) * 60 + parseInt(matchEndTime[2]),
+    ]);
+  }
+
+  console.log(person1_newArray, "\n", person2_newArray);
+
+  // list of all unavailable times
+
+  // erase those not within the active period
+}
+
+person1_Schedule = [
+  ["7:00", "8:30"],
+  ["12:00", "13:00"],
+  ["16:00", "18:00"],
+];
+person1_DailyAct = ["9:00", "19:00"];
+person2_Schedule = [
+  ["9:00", "10:30"],
+  ["12:20", "13:30"],
+  ["14:00", "15:00"],
+  ["16:00", "17:00"],
+];
+person2_DailyAct = ["9:00", "18: 30"];
+duration_of_meeting = 30;
+
+schedule(
+  person1_Schedule,
+  person1_DailyAct,
+  person2_Schedule,
+  person2_DailyAct,
+  duration_of_meeting
+);
+// convert to minutes from 00:00
