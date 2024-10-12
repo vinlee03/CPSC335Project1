@@ -5,39 +5,187 @@ function schedule(
   person2_DailyAct,
   duration_of_meeting
 ) {
-	//expression created to match time into HH:MM Format
+  // First, convert the time intervals from HH:MM format to minutes
   const convertTimesPattern = /^(\d+):(\d+)$/u;
-	//Arrays to store schedules of person 1 and person 2
-  let person1_newArray = [];
-  let person2_newArray = [];
-	//Loop through person1 schedule and convert each interval into minutes format
+
+  let person1_ScheduleMin = [];
+  let person2_ScheduleMin = [];
+
   for (const [startTime, endTime] of person1_Schedule) {
     var matchStartTime = convertTimesPattern.exec(startTime);
     var matchEndTime = convertTimesPattern.exec(endTime);
-
-//convert start and end times to total minutes since midnight
-    person1_newArray.push([
+    person1_ScheduleMin.push([
       parseInt(matchStartTime[1]) * 60 + parseInt(matchStartTime[2]),
       parseInt(matchEndTime[1]) * 60 + parseInt(matchEndTime[2]),
     ]);
   }
-//Loop through person2 schedule and convert each interval into minutes format
+
   for (const [startTime, endTime] of person2_Schedule) {
     var matchStartTime = convertTimesPattern.exec(startTime);
     var matchEndTime = convertTimesPattern.exec(endTime);
-    person2_newArray.push([
+    person2_ScheduleMin.push([
       parseInt(matchStartTime[1]) * 60 + parseInt(matchStartTime[2]),
       parseInt(matchEndTime[1]) * 60 + parseInt(matchEndTime[2]),
     ]);
   }
-//print converted schedules for both person1 and person 2
-  console.log(person1_newArray, "\n", person2_newArray);
 
-  // list of all unavailable times
+  // join all of the student schedule intervals in minutes, including the working period time intervals
+  let intervalsMin = [...person1_ScheduleMin, ...person2_ScheduleMin];
+  var matchActivityStartTime1 = convertTimesPattern.exec(person1_DailyAct[0]);
+  var matchActivityEndTime1 = convertTimesPattern.exec(person1_DailyAct[1]);
+  var matchActivityStartTime2 = convertTimesPattern.exec(person2_DailyAct[0]);
+  var matchActivityEndTime2 = convertTimesPattern.exec(person2_DailyAct[1]);
+  intervalsMin.push([
+    0,
+    parseInt(matchActivityStartTime1[1]) * 60 +
+      parseInt(matchActivityStartTime1[2]),
+  ]);
+  intervalsMin.push([
+    parseInt(matchActivityEndTime1[1]) * 60 +
+      parseInt(matchActivityEndTime1[2]),
+    24 * 60,
+  ]);
+  intervalsMin.push([
+    0,
+    parseInt(matchActivityStartTime2[1]) * 60 +
+      parseInt(matchActivityStartTime2[2]),
+  ]);
+  intervalsMin.push([
+    parseInt(matchActivityEndTime2[1]) * 60 +
+      parseInt(matchActivityEndTime2[2]),
+    24 * 60,
+  ]);
 
-  // erase those not within the active period
+  // Sort the time intervals in increasing order by the starting time: in-place selection sort
+  // outer loop for index in which we put next lowest
+  for (let i = 0; i < intervalsMin.length; i++) {
+    // inner loop in which we find the lowest starting from the outer loop index
+    for (let j = i; j < intervalsMin.length; j++) {
+      // if we find a index that points to a value lower than the current minimum index, swap values
+      if (intervalsMin[i][0] > intervalsMin[j][0]) {
+        const temp = intervalsMin[i];
+        intervalsMin[i] = intervalsMin[j];
+        intervalsMin[j] = temp;
+      }
+      // if the two intervals have the same starting time, then order them by the ending time
+      else if (
+        intervalsMin[i][0] == intervalsMin[j][0] &&
+        intervalsMin[i][1] > intervalsMin[j][1]
+      ) {
+        const temp = intervalsMin[i];
+        intervalsMin[i] = intervalsMin[j];
+        intervalsMin[j] = temp;
+      }
+    }
+  }
+
+  console.log(
+    "All time intervals (including the 4 working period intervals) sorted in increasing order by starting time:"
+  );
+  intervalsMin.forEach((interval, index) => {
+    console.log(`${index}: ${interval}`);
+  });
+
+  sortedMergedIntervalsMin = [];
+
+  // part 1: increase the end time of each interval to the end time the last overlapping interval
+  for (let i = 0; i < intervalsMin.length; i++) {
+    intervalStartTime = intervalsMin[i][0];
+    initialIntervalEndTime = intervalsMin[i][1];
+    // endtime changes since the end time of intervals is increased to the end time of overlapping intervals
+    endTime = intervalsMin[i][1];
+    for (let j = i; j < intervalsMin.length; j++) {
+      otherIntervalStartTime = intervalsMin[j][0];
+      otherIntervalEndTime = intervalsMin[j][1];
+      // if our current interval end time is greater than or equal to the other interval's start time,
+      // then our interval and the other interval are overlapping
+      // if, moreover, our current interval end time is less than the other interval's endtime,
+      // then we switch our current end time with the other interval's end time
+      if (
+        endTime <= otherIntervalEndTime &&
+        initialIntervalEndTime >= otherIntervalStartTime
+      ) {
+        endTime = otherIntervalEndTime;
+      }
+    }
+    initialIntervalEndTime = endTime;
+    sortedMergedIntervalsMin.push([intervalStartTime, initialIntervalEndTime]);
+  }
+
+  console.log("\n----------------------------\n");
+  console.log(
+    "Part 1 (merged unavailable times array): increase the end time of each interval to the end time the last overlapping interval"
+  );
+  sortedMergedIntervalsMin.forEach((interval, index) => {
+    console.log(`${index}: ${interval}`);
+  });
+
+  // part 2: deleting extra intervals (and deleting if interval duration is not greater than or equal to 30 minutes)
+  finalUnavailableArray = [sortedMergedIntervalsMin[0]];
+  // we start by comparing the first interval to the subsequent ones
+  let startRange = sortedMergedIntervalsMin[0][0];
+  let endRange = sortedMergedIntervalsMin[0][1];
+  for (let i = 1; i < sortedMergedIntervalsMin.length; i++) {
+    // we do not add intervals if they overlap with previously added intervals (they are redundant)
+    // we also do not add them if they are less than the duration of the meeting
+    if (
+      (startRange <= sortedMergedIntervalsMin[i][1] &&
+        sortedMergedIntervalsMin[i][1] <= endRange) ||
+      sortedMergedIntervalsMin[i][1] - sortedMergedIntervalsMin[i][0] <
+        duration_of_meeting
+    ) {
+      continue;
+    }
+    // change our ranges to check for overlap
+    startRange = sortedMergedIntervalsMin[i][0];
+    endRange = sortedMergedIntervalsMin[i][1];
+    finalUnavailableArray.push(sortedMergedIntervalsMin[i]);
+  }
+
+  console.log("\n----------------------------\n");
+  console.log(
+    "Part 2 (merged unavailable times array): deleting extra intervals (and deleting if interval duration is less than 30 minutes)"
+  );
+  finalUnavailableArray.forEach((interval, index) => {
+    console.log(`${index}: ${interval}`);
+  });
+
+  // create array of available times with the help of the list of unavailable times
+  availableSchedulesMin = [];
+  for (let i = 1; i < finalUnavailableArray.length; i++) {
+    // we create intervals from the end time of the last interval and the beginning time of the current interval
+    endOfUnavailable = finalUnavailableArray[i - 1][1];
+    endOfAvailable = finalUnavailableArray[i][0];
+    availableSchedulesMin.push([endOfUnavailable, endOfAvailable]);
+  }
+
+  console.log("\n----------------------------\n");
+  console.log("available times array (in minutes)");
+  availableSchedulesMin.forEach((interval, index) => {
+    console.log(`${index}: ${interval}`);
+  });
+
+  // give available time intervals hh:mm format
+  availableSchedulesFormatted = [];
+  for ([startTime, endTime] of availableSchedulesMin) {
+    startTimeFormatted = `${Math.floor(startTime / 60)
+      .toString()
+      .padStart(2, "0")}:${(startTime % 60).toString().padStart(2, "0")}`;
+    endTimeFormatted = `${Math.floor(endTime / 60)
+      .toString()
+      .padStart(2, "0")}:${(endTime % 60).toString().padStart(2, "0")}`;
+    availableSchedulesFormatted.push([startTimeFormatted, endTimeFormatted]);
+  }
+
+  console.log("\n----------------------------\n");
+  console.log("available times array (formatted)");
+  availableSchedulesFormatted.forEach((interval, index) => {
+    console.log(`${index}: ${interval}`);
+  });
+
+  return availableSchedulesFormatted;
 }
-//input data format for person 1 schedule
+
 person1_Schedule = [
   ["7:00", "8:30"],
   ["12:00", "13:00"],
@@ -50,15 +198,19 @@ person2_Schedule = [
   ["14:00", "15:00"],
   ["16:00", "17:00"],
 ];
-person2_DailyAct = ["9:00", "18: 30"];
+// // the original has a space for some reason
+// person2_DailyAct = ["9:00", "18: 30"];
+person2_DailyAct = ["9:00", "18:30"];
 duration_of_meeting = 30;
 
-//calls schedule function with provided input data
-schedule(
-  person1_Schedule,
-  person1_DailyAct,
-  person2_Schedule,
-  person2_DailyAct,
-  duration_of_meeting
+console.log(
+  schedule(
+    person1_Schedule,
+    person1_DailyAct,
+    person2_Schedule,
+    person2_DailyAct,
+    duration_of_meeting
+  )
 );
-// convert to minutes from 00:00
+
+// only trying with this input (professor said that's okay)
