@@ -1,35 +1,36 @@
 function swapping(row) {
+  console.log(
+    "Connecting pairs of persons by changing seating arrangements in row: ",
+    row
+  );
   // Initialize noSwaps to count the number of swaps performed
   noSwaps = 0;
 
-  // if two adjacent are couples, then skip them
-
-  // Loop over the first element of each couple
+  // Loop over the people sitting in the rows left to right, finding their match, person B, save for the last person
   for (i = 0; i < row.length - 2; i++) {
-    // If the two adjacent elements are couples, skip them
+    // If a person A's match (that is, person B) is right next to them, skip them
     if (Math.abs(row[i] - row[i + 1]) == 1) {
       i += 2;
     }
 
-    // Loop over the entire array to find the second element of each couple
+    // For each person A sitting in the rows left to right (save the last person), loop over the entire array to find their match
     for (j = i + 1; j < row.length - 1; j++) {
-      // if they are couples, then swap element i+1 and j
+      // If a person A's match is found (who cannot be right next to them), the person to the right of person A and person B should swap places
       if (Math.abs(row[i] - row[j]) == 1 && Math.abs(i - j) != 1) {
-        // Print the current couple indices (i, j), and the values to be swapped
-        console.log("Indices:", i, j, "Values:", row[i + 1], row[j]);
+        // Print the array prior to the swap
         console.log("Before swap:", row);
 
         // Increment the swap count
         noSwaps++;
 
-        // Swap row[i + 1] and row[j]
+        // The rightmost person and the match swip places
         temp = row[i + 1];
         row[i + 1] = row[j];
         row[j] = temp;
 
         // Print the array after the swap
         console.log("After swap:", row);
-        // Exit inner loop once a swap is done
+        // Exit inner loop once a swap is done: move on to the next person who needs a match
         break;
       }
     }
@@ -39,20 +40,20 @@ function swapping(row) {
   console.log("Total swaps:", noSwaps);
   // Print the final state of the array
   console.log("Final array:", row);
-  console.log("\n");
+  return noSwaps;
 }
 
 row = [0, 2, 1, 3];
-swapping(row);
+console.log(swapping(row));
 
 row = [3, 2, 0, 1];
-swapping(row);
+console.log(swapping(row));
 
 row = [1, 0, 3, 2];
-swapping(row);
+console.log(swapping(row));
 
 row = [4, 0, 2, 5, 3, 1];
-swapping(row);
+console.log(swapping(row));
 
 row = [5, 4, 0, 1, 3, 2];
-swapping(row);
+console.log(swapping(row));
