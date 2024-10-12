@@ -6,7 +6,7 @@ Our source code is written in Javascript
 
 Group Contributions:
 
-Vincent Lee: Created Github Repository, merged files, created psuedocode, and proved efficiency for Algorithm 1 report. Helped with proving efficiency for Algorithm 2. Assisted in writing comments and testing source code for Algorithm 1,2 and 3
+Vincent Lee: Created Github Repository, merged files, created psuedocode, and proved efficiency for Algorithm 1 report. Helped with proving efficiency for Algorithm 2. Assisted in writing comments for Algorithm 3 and testing source code for Algorithm 1,2 and 3
 
 Gustavo Necocha: 
 Wrote Source code and comments for algorithm 2 and 3. Worked together with Andrew Arsenault to write source code for algorithm 1. Assisted with proving efficiency and writing psuedocode for algorithm 3.
