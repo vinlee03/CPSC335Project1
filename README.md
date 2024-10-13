@@ -6,7 +6,7 @@ Our source code is written in Javascript
 
 Group Contributions:
 
-Vincent Lee: 
+Vincent Lee (vincentlee@csu.fullerton.edu): 
 Created Github Repository, merged files, created psuedocode, and proved efficiency for Algorithm 1 report. Helped with proving efficiency for Algorithm 2. Assisted in writing comments for Algorithm 3 and testing source code for Algorithm 1,2 and 3
 
 Gustavo Necochea (gnecoche@csu.fullerton.edu): 
